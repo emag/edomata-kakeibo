@@ -83,9 +83,9 @@ class BalanceSheetSpec extends AnyWordSpec with Matchers {
         result shouldBe Accepted(
           NonEmptyChain(
             Initialized(initA, initL),
-            AddedJournalEntry(entry1),
-            AddedJournalEntry(entry2),
-            AddedJournalEntry(entry3)
+            Journalized(entry1),
+            Journalized(entry2),
+            Journalized(entry3)
           ),
           Ready(
             assets = Map(

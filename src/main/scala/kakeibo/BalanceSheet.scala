@@ -14,7 +14,7 @@ enum BsEvent {
       assets: Map[AccountTitle, BigDecimal],
       liabilities: Map[AccountTitle, BigDecimal]
   )
-  case AddedJournalEntry(journalEntry: JournalEntry)
+  case Journalized(journalEntry: JournalEntry)
 }
 
 enum BsRejection {
@@ -51,7 +51,7 @@ enum BalanceSheet {
     this
       .perform(mustBeReady.toDecision.flatMap { _ =>
         if entry.amount > 0
-        then Decision.accept(AddedJournalEntry(entry))
+        then Decision.accept(Journalized(entry))
         else Decision.reject(NegativeAmountJournalEntry)
       })
       .validate(_.mustNotBeNegativeBalance)
@@ -76,7 +76,7 @@ object BalanceSheet extends DomainModel[BalanceSheet, BsEvent, BsRejection] {
   override def transition
       : BsEvent => BalanceSheet => ValidatedNec[BsRejection, BalanceSheet] = {
     case Initialized(as, ls) => _ => Ready(as, ls).validNec
-    case AddedJournalEntry(e) =>
+    case Journalized(e) =>
       _.mustBeReady.map { bs =>
         bs.copy(
           assets = calcNewAssets(bs, e),
