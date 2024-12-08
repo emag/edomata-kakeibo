@@ -32,7 +32,6 @@ class BalanceSheetSpec extends AnyWordSpec with Matchers {
           liabilities = initialLiabilities
         )
         // Then
-        println(result)
         result shouldBe Accepted(
           NonEmptyChain(Initialized(initialAssets, initialLiabilities)),
           Ready(initialAssets, initialLiabilities)
@@ -97,6 +96,21 @@ class BalanceSheetSpec extends AnyWordSpec with Matchers {
             )
           )
         )
+      }
+      "初期化をせずに仕訳は記帳できない" in {
+        // Given
+        val entry = JournalEntry(
+          date = LocalDate.now(),
+          debit = BankAccount,
+          credit = Cash,
+          amount = BigDecimal(-500_000),
+          description = "入金"
+        )
+        // When
+        val result = BalanceSheet.NotReady
+          .journalize(entry)
+        // Then
+        result shouldBe Rejected(NonEmptyChain(NotReady))
       }
       "負数の金額を持つ仕訳は記帳できない" in {
         // Given
