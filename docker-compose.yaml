@@ -1,0 +1,7 @@
+services:
+  db:
+    image: postgres:17.2
+    environment:
+      POSTGRES_PASSWORD: passwd
+    ports:
+      - "${PORT:-5432}:5432"
